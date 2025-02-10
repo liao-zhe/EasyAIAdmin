@@ -1,45 +1,31 @@
-import React from 'react'
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate
-} from 'react-router-dom'
-import { App as AntdApp } from 'antd'
-import Login from './pages/Login'
-import Dashboard from './pages/Dashboard'
+import React, { Suspense } from 'react'
+import { BrowserRouter, useRoutes } from 'react-router-dom'
+import { App as AntdApp, Spin } from 'antd'
+import { routes } from './routes'
 import 'antd/dist/reset.css'
 
-interface PrivateRouteProps {
-  children: React.ReactNode
+// 路由组件
+const RouterComponent: React.FC = () => {
+  const element = useRoutes(routes)
+  return element
 }
 
-const PrivateRoute: React.FC<PrivateRouteProps> = ({ children }) => {
-  const token = localStorage.getItem('token')
-  return token ? <>{children}</> : <Navigate to="/login" />
-}
-
-const AppRouter: React.FC = () => {
+const App: React.FC = () => {
   return (
-    <div className="min-h-screen bg-gray-100 p-4">
-      <AntdApp>
-        <Router>
-          <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route
-              path="/dashboard"
-              element={
-                <PrivateRoute>
-                  <Dashboard />
-                </PrivateRoute>
-              }
-            />
-            <Route path="/" element={<Navigate to="/dashboard" />} />
-          </Routes>
-        </Router>
-      </AntdApp>
-    </div>
+    <AntdApp>
+      <BrowserRouter>
+        <Suspense
+          fallback={
+            <div className="loading-container">
+              <Spin size="large" />
+            </div>
+          }
+        >
+          <RouterComponent />
+        </Suspense>
+      </BrowserRouter>
+    </AntdApp>
   )
 }
 
-export default AppRouter
+export default App

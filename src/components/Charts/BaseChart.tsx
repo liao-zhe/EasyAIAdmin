@@ -1,21 +1,17 @@
 import React from 'react'
 import ReactECharts from 'echarts-for-react'
-import type { EChartsOption } from 'echarts'
 import './charts.css'
 
 interface BaseChartProps {
-  option: EChartsOption
-  style?: React.CSSProperties
-  className?: string
+  option: any
 }
 
-const BaseChart: React.FC<BaseChartProps> = ({ option, style, className }) => {
+const BaseChart: React.FC<BaseChartProps> = ({ option }) => {
   return (
     <div className="chart-container">
       <ReactECharts
         option={option}
-        style={{ height: '100%', ...style }}
-        className={className}
+        style={{ height: '100%', width: '100%' }}
         opts={{ renderer: 'svg' }}
       />
     </div>

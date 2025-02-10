@@ -3,21 +3,21 @@ import { useNavigate } from 'react-router-dom'
 import { Form, Input, Button, Card, message } from 'antd'
 import { UserOutlined, LockOutlined } from '@ant-design/icons'
 import { authApi } from '../api/apis'
-import type { LoginParams, LoginResponse } from '../api/auth'
+import type { LoginParams } from '../api/auth'
+import type { BaseResponse } from '../api/types'
 import './Login.css'
 
-const Login: React.FC = () => {
+const Register: React.FC = () => {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
 
-  const handleLogin = async (values: LoginParams) => {
+  const handleRegister = async (values: LoginParams) => {
     setLoading(true)
     try {
-      const res = (await authApi.login(values)) as LoginResponse
+      const res = (await authApi.register(values)) as BaseResponse<null>
       if (res.code === 0) {
-        localStorage.setItem('token', res.data.token)
         message.success(res.message)
-        navigate('/dashboard')
+        navigate('/login')
       } else {
         message.error(res.message)
       }
@@ -29,36 +29,42 @@ const Login: React.FC = () => {
   return (
     <div className="login-container">
       <Card className="login-card" bordered={false}>
-        <h2 className="login-title">系统登录</h2>
+        <h2 className="login-title">用户注册</h2>
         <Form
-          name="login"
-          onFinish={handleLogin}
+          name="register"
+          onFinish={handleRegister}
           autoComplete="off"
           size="large"
           className="login-form"
         >
           <Form.Item
             name="username"
-            rules={[{ required: true, message: '请输入用户名！' }]}
+            rules={[
+              { required: true, message: '请输入用户名！' },
+              { min: 3, message: '用户名至少3个字符！' }
+            ]}
           >
             <Input prefix={<UserOutlined />} placeholder="用户名" />
           </Form.Item>
 
           <Form.Item
             name="password"
-            rules={[{ required: true, message: '请输入密码！' }]}
+            rules={[
+              { required: true, message: '请输入密码！' },
+              { min: 6, message: '密码至少6个字符！' }
+            ]}
           >
             <Input.Password prefix={<LockOutlined />} placeholder="密码" />
           </Form.Item>
 
           <Form.Item>
             <Button type="primary" htmlType="submit" block loading={loading}>
-              登录
+              注册
             </Button>
           </Form.Item>
           <Form.Item>
-            <Button type="link" block onClick={() => navigate('/register')}>
-              没有账号？去注册
+            <Button type="link" block onClick={() => navigate('/login')}>
+              已有账号？去登录
             </Button>
           </Form.Item>
         </Form>
@@ -67,4 +73,4 @@ const Login: React.FC = () => {
   )
 }
 
-export default Login
+export default Register

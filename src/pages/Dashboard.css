@@ -122,36 +122,38 @@
 }
 
 /* 图表卡片样式 */
-.dashboard-charts {
-  margin-bottom: 24px;
-}
-
-.chart-card {
-  height: 400px;
+.dashboard-card {
+  margin-bottom: 16px;
+  height: 450px; /* 给卡片一个固定高度 */
   transition: all 0.3s ease;
-  background: white;
-  border-radius: 12px;
 }
 
-.chart-card .ant-card-body {
-  height: calc(100% - 57px); /* 减去标题的高度 */
-  padding: 12px;
-}
-
-.chart-card:hover {
+.dashboard-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
 }
 
-.chart-card .ant-card-head {
-  border-bottom: 1px solid #f0f0f0;
-  padding: 0 16px;
+.dashboard-card .ant-card-body {
+  height: calc(100% - 57px); /* 减去卡片头部的高度 */
+  padding: 16px;
 }
 
-.chart-card .ant-card-head-title {
-  font-size: 16px;
-  font-weight: 500;
-  color: #1f2937;
+.dashboard-container .ant-row {
+  margin-bottom: 16px;
+}
+
+.dashboard-container .ant-col {
+  height: 450px; /* 列高度与卡片一致 */
+}
+
+.dashboard-container .ant-card {
+  height: 100%;
+  transition: all 0.3s ease;
+}
+
+.dashboard-container .ant-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
 }
 
 /* 用户管理表格样式 */

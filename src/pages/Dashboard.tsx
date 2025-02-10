@@ -1,13 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import {
-  MenuFoldOutlined,
-  MenuUnfoldOutlined,
-  UserOutlined,
-  DashboardOutlined,
-  SettingOutlined,
-  LogoutOutlined
-} from '@ant-design/icons'
+import { MenuUnfoldOutlined, LogoutOutlined } from '@ant-design/icons'
 import {
   Layout,
   Menu,
@@ -15,15 +8,15 @@ import {
   Card,
   Row,
   Col,
-  Table,
-  Tag,
   Switch,
   Input,
-  Select
+  Select,
+  Table,
+  Space
 } from 'antd'
 import './Dashboard.css'
-import VisitChart from '../components/Charts/VisitChart'
-import UserGrowthChart from '../components/Charts/UserGrowthChart'
+import { UserGrowthChart, VisitChart } from '../components/Charts'
+import { menuItems } from '../routes'
 
 const { Header, Sider, Content } = Layout
 
@@ -36,61 +29,6 @@ const Dashboard: React.FC = () => {
     localStorage.removeItem('token')
     navigate('/login')
   }
-
-  // 用户列表数据
-  const userColumns = [
-    {
-      title: '用户名',
-      dataIndex: 'username',
-      key: 'username'
-    },
-    {
-      title: '角色',
-      dataIndex: 'role',
-      key: 'role',
-      render: (role: string) => (
-        <Tag color={role === 'admin' ? 'blue' : 'green'}>
-          {role.toUpperCase()}
-        </Tag>
-      )
-    },
-    {
-      title: '状态',
-      dataIndex: 'status',
-      key: 'status',
-      render: (status: boolean) => <Switch checked={status} size="small" />
-    },
-    {
-      title: '操作',
-      key: 'action',
-      render: () => (
-        <Button type="link" size="small">
-          编辑
-        </Button>
-      )
-    }
-  ]
-
-  const userData = [
-    {
-      key: '1',
-      username: 'admin',
-      role: 'admin',
-      status: true
-    },
-    {
-      key: '2',
-      username: 'user1',
-      role: 'user',
-      status: true
-    },
-    {
-      key: '3',
-      username: 'user2',
-      role: 'user',
-      status: false
-    }
-  ]
 
   // 系统设置选项
   const settingsContent = (
@@ -154,16 +92,16 @@ const Dashboard: React.FC = () => {
     switch (activeMenu) {
       case 'dashboard':
         return (
-          <div className="dashboard-charts">
+          <div className="dashboard-container">
             <Row gutter={[16, 16]}>
-              <Col xs={24} lg={12}>
-                <Card className="chart-card" title="访问统计">
-                  <VisitChart />
+              <Col span={12}>
+                <Card title="用户增长" className="dashboard-card">
+                  <UserGrowthChart />
                 </Card>
               </Col>
-              <Col xs={24} lg={12}>
-                <Card className="chart-card" title="用户增长">
-                  <UserGrowthChart />
+              <Col span={12}>
+                <Card title="访问统计" className="dashboard-card">
+                  <VisitChart />
                 </Card>
               </Col>
             </Row>
@@ -171,8 +109,73 @@ const Dashboard: React.FC = () => {
         )
       case 'users':
         return (
-          <Card title="用户管理" className="user-table-card">
-            <Table columns={userColumns} dataSource={userData} />
+          <Card title="用户列表" className="dashboard-card">
+            <Table
+              columns={[
+                {
+                  title: 'ID',
+                  dataIndex: 'id',
+                  key: 'id'
+                },
+                {
+                  title: '用户名',
+                  dataIndex: 'username',
+                  key: 'username'
+                },
+                {
+                  title: '角色',
+                  dataIndex: 'role',
+                  key: 'role',
+                  render: (role: string) =>
+                    role === 'admin' ? '管理员' : '普通用户'
+                },
+                {
+                  title: '状态',
+                  dataIndex: 'status',
+                  key: 'status',
+                  render: (status: number) => (status === 1 ? '正常' : '禁用')
+                },
+                {
+                  title: '注册时间',
+                  dataIndex: 'created_at',
+                  key: 'created_at'
+                },
+                {
+                  title: '操作',
+                  key: 'action',
+                  render: () => (
+                    <Space>
+                      <Button type="link">编辑</Button>
+                      <Button type="link" danger>
+                        删除
+                      </Button>
+                    </Space>
+                  )
+                }
+              ]}
+              dataSource={[
+                {
+                  id: 1,
+                  username: 'admin',
+                  role: 'admin',
+                  status: 1,
+                  created_at: '2024-01-01'
+                },
+                {
+                  id: 2,
+                  username: 'user',
+                  role: 'user',
+                  status: 1,
+                  created_at: '2024-01-02'
+                }
+              ]}
+              rowKey="id"
+              pagination={{
+                total: 2,
+                pageSize: 10,
+                showTotal: total => `共 ${total} 条记录`
+              }}
+            />
           </Card>
         )
       case 'settings':
@@ -181,24 +184,6 @@ const Dashboard: React.FC = () => {
         return null
     }
   }
-
-  const menuItems = [
-    {
-      key: 'dashboard',
-      icon: <DashboardOutlined />,
-      label: '仪表盘'
-    },
-    {
-      key: 'users',
-      icon: <UserOutlined />,
-      label: '用户管理'
-    },
-    {
-      key: 'settings',
-      icon: <SettingOutlined />,
-      label: '系统设置'
-    }
-  ]
 
   return (
     <Layout className="dashboard-layout">
@@ -216,7 +201,13 @@ const Dashboard: React.FC = () => {
         <Header className="dashboard-header">
           <Button
             type="text"
-            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+            icon={
+              collapsed ? (
+                <MenuUnfoldOutlined />
+              ) : (
+                <MenuUnfoldOutlined rotate={180} />
+              )
+            }
             onClick={() => setCollapsed(!collapsed)}
             className="trigger-button"
           />
