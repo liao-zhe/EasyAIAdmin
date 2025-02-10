@@ -1,26 +1,45 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from 'react'
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate
+} from 'react-router-dom'
+import { App as AntdApp } from 'antd'
+import Login from './pages/Login'
+import Dashboard from './pages/Dashboard'
+import 'antd/dist/reset.css'
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+interface PrivateRouteProps {
+  children: React.ReactNode
 }
 
-export default App;
+const PrivateRoute: React.FC<PrivateRouteProps> = ({ children }) => {
+  const token = localStorage.getItem('token')
+  return token ? <>{children}</> : <Navigate to="/login" />
+}
+
+const AppRouter: React.FC = () => {
+  return (
+    <div className="min-h-screen bg-gray-100 p-4">
+      <AntdApp>
+        <Router>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route
+              path="/dashboard"
+              element={
+                <PrivateRoute>
+                  <Dashboard />
+                </PrivateRoute>
+              }
+            />
+            <Route path="/" element={<Navigate to="/dashboard" />} />
+          </Routes>
+        </Router>
+      </AntdApp>
+    </div>
+  )
+}
+
+export default AppRouter
